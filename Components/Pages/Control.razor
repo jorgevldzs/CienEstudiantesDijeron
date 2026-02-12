@@ -1,0 +1,97 @@
+@page "/control"
+@using CienEstudiantesDijeron.Data
+@using CienEstudiantesDijeron.Models
+@inject JuegoService Juego
+@inject ApplicationDbContext DbContext
+@rendermode InteractiveServer
+@implements IDisposable
+
+<h3>Panel de Control</h3>
+
+<h4>Configuración de Equipos</h4>
+<div style="margin-bottom: 20px;">
+    <input @bind="nombreTmp1" placeholder="Nombre Equipo 1" />
+    <input @bind="nombreTmp2" placeholder="Nombre Equipo 2" />
+    <br />
+    <button @onclick="ActualizarEquipos">Actualizar Nombres en Pantalla</button>
+</div>
+
+<h4>Pregunta Actual</h4>
+@if (!string.IsNullOrEmpty(Juego.PreguntaActual))
+{
+    <p><strong>ID: @Juego.PreguntaActualId - @Juego.PreguntaActual</strong></p>
+}
+else
+{
+    <p><em>No hay pregunta cargada</em></p>
+}
+
+<button @onclick="CargarPreguntaAleatoria">Cargar Pregunta Aleatoria</button>
+
+<h4>Respuestas Disponibles</h4>
+@if (Juego.RespuestasActuales.Any())
+{
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px;">
+        @foreach (var respuesta in Juego.RespuestasActuales.OrderByDescending(r => r.res_cantidad))
+        {
+            <button @onclick="() => Juego.RevelarRespuestaPorTexto(respuesta.res_respuesta)"
+                    style="padding: 10px; background: @(Juego.RespuestasReveladas.Contains(respuesta.res_respuesta) ? "#4CAF50" : "#2196F3"); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                @respuesta.res_respuesta (@respuesta.res_cantidad)
+            </button>
+        }
+    </div>
+}
+else
+{
+    <p><em>Carga una pregunta para ver las respuestas</em></p>
+}
+
+@code {
+    private string nombreTmp1 = "";
+    private string nombreTmp2 = "";
+    private List<int> preguntasUsadas = new List<int>();
+    
+    protected override void OnInitialized()
+    {
+        Juego.OnChange += StateHasChanged;
+    }
+    
+    public void Dispose()
+    {
+        Juego.OnChange -= StateHasChanged;
+    }
+    
+    private void ActualizarEquipos()
+    {
+        Juego.ActualizarNombres(nombreTmp1, nombreTmp2);
+    }
+    
+    private void CargarPreguntaAleatoria()
+    {
+        var preguntasDisponibles = DbContext.Preguntas
+            .Where(p => !preguntasUsadas.Contains(p.pr_id))
+            .ToList();
+        
+        if (!preguntasDisponibles.Any())
+        {
+            preguntasUsadas.Clear();
+            preguntasDisponibles = DbContext.Preguntas.ToList();
+        }
+        
+        if (preguntasDisponibles.Any())
+        {
+            var random = new Random();
+            var preguntaAleatoria = preguntasDisponibles[random.Next(preguntasDisponibles.Count)];
+            
+            // Cargar las respuestas de esta pregunta
+            var respuestas = DbContext.Respuestas
+                .Where(r => r.pr_id == preguntaAleatoria.pr_id)
+                .ToList();
+            
+            preguntasUsadas.Add(preguntaAleatoria.pr_id);
+            Juego.ActualizarJuego(preguntaAleatoria.pr_pregunta, preguntaAleatoria.pr_id, respuestas);
+        }
+    }
+}
+
+

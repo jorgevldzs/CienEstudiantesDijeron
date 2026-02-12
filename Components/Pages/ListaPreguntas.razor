@@ -1,0 +1,49 @@
+
+@page "/preguntas"
+@using CienEstudiantesDijeron.Data
+@using CienEstudiantesDijeron.Models
+
+@inject ApplicationDbContext DbContext
+
+<h3>Lista de Preguntas y Respuestas</h3>
+
+@if (preguntas == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <ul>
+        @foreach (var pregunta in preguntas)
+        {
+            <li>@pregunta.pr_id - @pregunta.pr_pregunta</li>
+        }
+    </ul>
+}
+
+
+@if (respuestas == null)
+{
+    <p>Cargando respuestas...</p>
+}
+else
+{
+    <ul>
+        @foreach (var respuesta in respuestas)
+        {
+            <li>@respuesta.res_id - @respuesta.res_respuesta - @respuesta.res_cantidad</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Pregunta>? preguntas;
+
+    private List<Respuesta>? respuestas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        preguntas = DbContext.Preguntas.ToList();
+        respuestas = DbContext.Respuestas.ToList();
+    }
+}

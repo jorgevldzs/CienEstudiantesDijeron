@@ -1,0 +1,49 @@
+@page "/tablero"
+@inject JuegoService Juego
+@implements IDisposable
+@rendermode InteractiveServer
+
+<div class="marcador-container" style="display: flex; justify-content: space-around; background: #222; color: white; padding: 20px;">
+    
+    <div class="equipo">
+        <h2 style="color: cyan;">@Juego.Equipo1</h2>
+        <p>Puntos: 0</p>
+    </div>
+
+    <div class="vs">
+        <h1>VS</h1>
+    </div>
+
+    <div class="equipo">
+        <h2 style="color: magenta;">@Juego.Equipo2</h2>
+        <p>Puntos: 0</p>
+    </div>
+
+</div>
+
+<div style="background-color: navy; color: white; padding: 50px; text-align: center;">
+    <h1>@Juego.PreguntaActual</h1>
+
+    <ul>
+        @foreach (var res in Juego.RespuestasReveladas)
+        {
+            <li style="font-size: 2rem; background: gold; color: black; margin: 10px;">
+                @res
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Nos suscribimos al evento cuando la página carga
+        Juego.OnChange += async () => await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        // Nos desuscribimos al cerrar la página para evitar fugas de memoria
+        Juego.OnChange -= async () => await InvokeAsync(StateHasChanged);
+    }
+}
