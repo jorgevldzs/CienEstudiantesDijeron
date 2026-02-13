@@ -1,4 +1,4 @@
-@page "/control"
+@page "/"
 @using CienEstudiantesDijeron.Data
 @using CienEstudiantesDijeron.Models
 @inject JuegoService Juego
@@ -6,50 +6,85 @@
 @rendermode InteractiveServer
 @implements IDisposable
 
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Control</PageTitle>
+
 <h3>Panel de Control</h3>
 
-<h4>Configuración de Equipos</h4>
+@*Boton para abrir la ventana del Tablero*@
+<button @onclick="AbrirVentana">Abrir Tablero</button>
+
+<h4>Configuración de Partida</h4>
+
+@*Seccion donde se configura la partida, nombres de equipo y cantidad de rondas*@
 <div style="margin-bottom: 20px;">
-    <input @bind="nombreTmp1" placeholder="Nombre Equipo 1" />
-    <input @bind="nombreTmp2" placeholder="Nombre Equipo 2" />
+    <label for="nombreEq1">Nombre Equipo 1:</label>
+    <br>
+    <input @bind="nombreTmp1" placeholder="Nombre Equipo 1" id="nombreEq1" />
+    <br>
+
+    <label for="nombreEq2">Nombre Equipo 2:</label>
+    <br>
+    <input @bind="nombreTmp2" placeholder="Nombre Equipo 2" id="nombreEq2" />
     <br />
-    <button @onclick="ActualizarEquipos">Actualizar Nombres en Pantalla</button>
+
+    <label for="cantRondas">Numero de Rondas</label>
+    <br>
+    <input @bind="cantidadRondas" placeholder="Rondas" type="number" id="cantRondas"/>
+    <br>
+
+    <button @onclick="ActualizarEquipos">Comenzar Partida</button>
 </div>
 
-<h4>Pregunta Actual</h4>
-@if (!string.IsNullOrEmpty(Juego.PreguntaActual))
-{
-    <p><strong>ID: @Juego.PreguntaActualId - @Juego.PreguntaActual</strong></p>
-}
-else
-{
-    <p><em>No hay pregunta cargada</em></p>
-}
+@*Seccion del contenido de la partida*@
+<div>
+    <h4>Pregunta Actual</h4>
+    @if (!string.IsNullOrEmpty(Juego.PreguntaActual))
+    {
+        <p><strong>ID: @Juego.PreguntaActualId - @Juego.PreguntaActual</strong></p>
+    }
+    else
+    {
+        <p><em>No hay pregunta cargada</em></p>
+    }
 
-<button @onclick="CargarPreguntaAleatoria">Cargar Pregunta Aleatoria</button>
+    <button @onclick="CargarPreguntaAleatoria">Cargar Pregunta Aleatoria</button>
 
-<h4>Respuestas Disponibles</h4>
-@if (Juego.RespuestasActuales.Any())
-{
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px;">
-        @foreach (var respuesta in Juego.RespuestasActuales.OrderByDescending(r => r.res_cantidad))
-        {
-            <button @onclick="() => Juego.RevelarRespuestaPorTexto(respuesta.res_respuesta)"
-                    style="padding: 10px; background: @(Juego.RespuestasReveladas.Contains(respuesta.res_respuesta) ? "#4CAF50" : "#2196F3"); color: white; border: none; border-radius: 5px; cursor: pointer;">
-                @respuesta.res_respuesta (@respuesta.res_cantidad)
-            </button>
-        }
-    </div>
-}
-else
-{
-    <p><em>Carga una pregunta para ver las respuestas</em></p>
-}
+    <h4>Respuestas Disponibles</h4>
+    @if (Juego.RespuestasActuales.Any())
+    {
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px;">
+            @foreach (var respuesta in Juego.RespuestasActuales.OrderByDescending(r => r.res_cantidad))
+            {
+                <button @onclick="() => Juego.RevelarRespuestaPorTexto(respuesta.res_respuesta)"
+                        style="padding: 10px; background: @(Juego.RespuestasReveladas.Contains(respuesta.res_respuesta) ? "#4CAF50" : "#2196F3"); color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    @respuesta.res_respuesta (@respuesta.res_cantidad)
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <p><em>Carga una pregunta para ver las respuestas</em></p>
+    }
+
+</div>
+
 
 @code {
+    //Nombre equipo 1
     private string nombreTmp1 = "";
+    
+    //Nombre equipo 2
     private string nombreTmp2 = "";
+
+    //Cantidad de rondas de la partida
+    private int cantidadRondas;
+
+    //Lista de preguntas usadas
     private List<int> preguntasUsadas = new List<int>();
+    
     
     protected override void OnInitialized()
     {
@@ -61,11 +96,13 @@ else
         Juego.OnChange -= StateHasChanged;
     }
     
+    //Metodo para cambiar el nombre de los equipos
     private void ActualizarEquipos()
     {
         Juego.ActualizarNombres(nombreTmp1, nombreTmp2);
     }
     
+    //Metodo para cargar pregunta aleatoria
     private void CargarPreguntaAleatoria()
     {
         var preguntasDisponibles = DbContext.Preguntas
@@ -91,6 +128,14 @@ else
             preguntasUsadas.Add(preguntaAleatoria.pr_id);
             Juego.ActualizarJuego(preguntaAleatoria.pr_pregunta, preguntaAleatoria.pr_id, respuestas);
         }
+    }
+
+    //Metodo para abrir la ventana del tablero
+    private async Task AbrirVentana()
+    {
+        var url = "/tablero";
+        
+        await JSRuntime.InvokeVoidAsync("open", url, "_blank");
     }
 }
 
