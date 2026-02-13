@@ -6,46 +6,56 @@
 <PageTitle>Tablero</PageTitle>
 
 <div class="marcador-container" style="display: flex; justify-content: space-around; background: #222; color: white; padding: 20px;">
-    
     <div class="equipo">
         <h2 style="color: cyan;">@Juego.Equipo1</h2>
-        <p>Puntos: 0</p>
     </div>
-
-    <div class="vs">
-        <h1>VS</h1>
-    </div>
-
+    <div class="vs"><h1>VS</h1></div>
     <div class="equipo">
         <h2 style="color: magenta;">@Juego.Equipo2</h2>
-        <p>Puntos: 0</p>
     </div>
-
 </div>
 
-<div style="background-color: navy; color: white; padding: 50px; text-align: center;">
-    <h1>@Juego.PreguntaActual</h1>
+<div style="background-color: navy; color: white; min-height: 400px; padding: 50px; text-align: center;">
+    
+    @if (Juego.PreguntaRevelada)
+    {
+        <h1 style="font-size: 3rem; margin-bottom: 30px; text-transform: uppercase;">@Juego.PreguntaActual</h1>
 
-    <ul>
-        @foreach (var res in Juego.RespuestasReveladas)
-        {
-            <li style="font-size: 2rem; background: gold; color: black; margin: 10px;">
-                @res
-            </li>
-        }
-    </ul>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 900px; margin: 0 auto;">
+            @for (int i = 0; i < Juego.RespuestasActuales.Count; i++)
+            {
+                var res = Juego.RespuestasActuales[i];
+                var estaRevelada = Juego.RespuestasReveladas.Contains(res.res_respuesta);
+
+                <div style="height: 60px; border: 2px solid white; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: @(estaRevelada ? "gold" : "#333"); color: @(estaRevelada ? "black" : "white"); font-size: 1.5rem; font-weight: bold;">
+                    <span>@(i + 1). @(estaRevelada ? res.res_respuesta : "???")</span>
+                    @if (estaRevelada)
+                    {
+                        <span style="border-left: 2px solid black; padding-left: 15px;">@res.res_cantidad</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <h1 style="color: rgba(255,255,255,0.3); margin-top: 100px;">ESPERANDO RONDA...</h1>
+    }
 </div>
 
 @code {
     protected override void OnInitialized()
     {
-        // Nos suscribimos al evento cuando la página carga
-        Juego.OnChange += async () => await InvokeAsync(StateHasChanged);
+        Juego.OnChange += ActualizarUI;
+    }
+
+    private async void ActualizarUI()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        // Nos desuscribimos al cerrar la página para evitar fugas de memoria
-        Juego.OnChange -= async () => await InvokeAsync(StateHasChanged);
+        Juego.OnChange -= ActualizarUI;
     }
 }
