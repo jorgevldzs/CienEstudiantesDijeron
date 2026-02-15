@@ -26,6 +26,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Layout/LayoutSinNav.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTGF5b3V0U2luTmF2LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/Control.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db250cm9sLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
