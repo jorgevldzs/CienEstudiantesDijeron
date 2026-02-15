@@ -37,6 +37,9 @@ public class JuegoService
     public List<RegistroPuntos> HistorialPuntos { get; private set; } = new();
 
 
+    public int ErroresEquipo1 { get; private set; } = 0;
+    public int ErroresEquipo2 { get; private set; } = 0;
+    public bool MostrarX { get; private set; } = false; // Para el efecto visual temporal
     
 
 
@@ -83,6 +86,8 @@ public class JuegoService
 
     public void AumentarPuntosRonda(string respuesta)
     {
+        if (puntosAsignadosEnRonda) return;
+
         foreach (Respuesta r in RespuestasActuales)
         {
             if (r.res_respuesta.Equals(respuesta))
@@ -117,6 +122,11 @@ public class JuegoService
         puntosAsignadosEnRonda = false;
         Multiplicador = 1;
 
+        ErroresEquipo1 = 0;
+        ErroresEquipo2 = 0;
+        MostrarX = false;
+        NotifyStateChanged();
+
 
         // ¡Muy importante! Notificar a los componentes (Control y Tablero) 
         // para que limpien sus pantallas automáticamente.
@@ -125,22 +135,26 @@ public class JuegoService
 
     public void AsignarPuntosEquipo(string equipo, int numRonda)
     {
+        
+
         if (!puntosAsignadosEnRonda && puntosPartida > 0)
         {
-            if (equipo == Equipo1) puntosEquipo1 += puntosPartida;
-            else 
-                if (equipo == Equipo2) puntosEquipo2 += puntosPartida;
+            // Guardamos el valor actual antes de "vaciarlo"
+            int puntosAEntregar = puntosPartida;
 
+            if (equipo == Equipo1) puntosEquipo1 += puntosAEntregar;
+            else if (equipo == Equipo2) puntosEquipo2 += puntosAEntregar;
 
             // GUARDAR EN EL HISTORIAL
             HistorialPuntos.Add(new RegistroPuntos 
             { 
                 Ronda = numRonda, 
                 Equipo = equipo, 
-                Puntos = puntosPartida 
+                Puntos = puntosAEntregar 
             });
 
-            puntosAsignadosEnRonda = true; 
+            puntosAsignadosEnRonda = true;
+            puntosPartida = 0; // Vaciamos los puntos de la ronda (desaparecen del centro)
             NotifyStateChanged();
         }
 
@@ -180,6 +194,25 @@ public class JuegoService
     }
 
     private void NotifyStateChanged() => OnChange?.Invoke();
+
+
+    public void AgregarError(string equipo)
+    {
+        if (equipo == Equipo1 && ErroresEquipo1 < 3) ErroresEquipo1++;
+        else if (equipo == Equipo2 && ErroresEquipo2 < 3) ErroresEquipo2++;
+        
+        ActivarEfectoX();
+    }
+
+
+    private async void ActivarEfectoX()
+    {
+        MostrarX = true;
+        NotifyStateChanged();
+        await Task.Delay(2000); // La X se muestra por 2 segundos
+        MostrarX = false;
+        NotifyStateChanged();
+    }
 
     public class RegistroPuntos 
     {

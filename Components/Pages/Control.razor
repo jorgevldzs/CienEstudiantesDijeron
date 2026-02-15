@@ -190,18 +190,42 @@
                     }
                 </div>
 
+                <div style="display: flex; justify-content: space-around; margin-top: 15px; padding: 10px; background: #ffebee; border-radius: 8px;">
+                    <div style="text-align: center;">
+                        <h6>Errores @Juego.Equipo1</h6>
+                        <div style="font-size: 1.5rem; color: red; font-weight: bold; margin-bottom: 5px;">
+                            @string.Concat(Enumerable.Repeat("X ", Juego.ErroresEquipo1))
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm" @onclick='() => Juego.AgregarError(Juego.Equipo1)'>
+                            + Marcar Error
+                        </button>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <h6>Errores @Juego.Equipo2</h6>
+                        <div style="font-size: 1.5rem; color: red; font-weight: bold; margin-bottom: 5px;">
+                            @string.Concat(Enumerable.Repeat("X ", Juego.ErroresEquipo2))
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm" @onclick='() => Juego.AgregarError(Juego.Equipo2)'>
+                            + Marcar Error
+                        </button>
+                    </div>
+                </div>
+
+                
+
                 <div style="display: flex; justify-content: space-evenly; margin-top: 20px; background: #eee; padding: 15px;">
-                    @* El botón se deshabilita si ya se asignaron puntos O si no hay puntos que asignar *@
+                    @* Usamos una variable temporal para el texto del botón si los puntos ya se asignaron *@
                     <button class="btn btn-success" 
                             @onclick="() => Juego.AsignarPuntosEquipo(Juego.Equipo1, rondaActual)"
                             disabled="@(Juego.puntosAsignadosEnRonda || Juego.puntosPartida == 0)">
-                        Entregar @Juego.puntosPartida pts a @Juego.Equipo1
+                        @(Juego.puntosAsignadosEnRonda ? "Entregados" : $"Entregar {Juego.puntosPartida} pts a {Juego.Equipo1}")
                     </button>
 
                     <button class="btn btn-success" 
                             @onclick="() => Juego.AsignarPuntosEquipo(Juego.Equipo2, rondaActual)"
                             disabled="@(Juego.puntosAsignadosEnRonda || Juego.puntosPartida == 0)">
-                        Entregar @Juego.puntosPartida pts a @Juego.Equipo2
+                        @(Juego.puntosAsignadosEnRonda ? "Entregados" : $"Entregar {Juego.puntosPartida} pts a {Juego.Equipo2}")
                     </button>
                 </div>
 
@@ -283,14 +307,7 @@
 
     private void FinalizarPartida()
     {
-        partidaEnCurso = false;
-        rondaActual = 0;
-        preguntasUsadas.Clear();
-        Juego.LimpiarPregunta();
-        // Opcional: Resetear nombres
-        nombreTmp1 = "";
-        nombreTmp2 = "";
-        Juego.ActualizarNombres(nombreTmp1, nombreTmp2);
+        Juego.FinalizarPartida();
 
     }
 
