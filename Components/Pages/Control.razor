@@ -19,7 +19,10 @@
 <h4>Pregunta Actual</h4>
 @if (!string.IsNullOrEmpty(Juego.PreguntaActual))
 {
-    <p><strong>ID: @Juego.PreguntaActualId - @Juego.PreguntaActual</strong></p>
+    <div class="pregunta-box">
+        ID: @Juego.PreguntaActualId - @Juego.PreguntaActual
+    </div>
+
 }
 else
 {
@@ -29,16 +32,36 @@ else
 <button @onclick="CargarPreguntaAleatoria">Cargar Pregunta Aleatoria</button>
 
 <h4>Respuestas Disponibles</h4>
+
 @if (Juego.RespuestasActuales.Any())
 {
+    <div style="margin-bottom: 10px; display: flex; gap: 600px;">
+        <button @onclick="() => Juego.SumarPuntosRevelados(1)">@Juego.Equipo1 (@Juego.PuntosEquipo1 pts)</button>
+        <button @onclick="() => Juego.SumarPuntosRevelados(2)">@Juego.Equipo2 (@Juego.PuntosEquipo2 pts)</button>
+    </div>
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px;">
-        @foreach (var respuesta in Juego.RespuestasActuales.OrderByDescending(r => r.res_cantidad))
+        @foreach (var respuesta in Juego.RespuestasActuales)
         {
-            <button @onclick="() => Juego.RevelarRespuestaPorTexto(respuesta.res_respuesta)"
-                    style="padding: 10px; background: @(Juego.RespuestasReveladas.Contains(respuesta.res_respuesta) ? "#4CAF50" : "#2196F3"); color: white; border: none; border-radius: 5px; cursor: pointer;">
-                @respuesta.res_respuesta (@respuesta.res_cantidad)
-            </button>
+            var estaRevelada = Juego.RespuestasReveladas.Contains(respuesta.res_id);
+            var index = Juego.RespuestasActuales.IndexOf(respuesta) + 1;
+            <div class="respuesta-card">
+                <button style="width:100%; height:100%;" @onclick="() => ToggleRespuesta(respuesta.res_id)">
+                    @if (estaRevelada)
+                    {
+                        @($"{respuesta.res_respuesta} ({respuesta.res_cantidad})")
+                    }
+                    else
+                    {
+                        @($"Respuesta {index}")
+                    }
+                </button>
+            </div>
         }
+    </div>
+    <div style="margin-top: 15px; display: flex; gap: 30px;">
+        <button @onclick="Juego.RevelarTodo">Revelar Todo</button>
+        <button @onclick="Juego.OcultarTodo">Ocultar Todo</button>
+        <button @onclick="Juego.ResetearPuntos">Resetear puntos</button>
     </div>
 }
 else
@@ -46,52 +69,68 @@ else
     <p><em>Carga una pregunta para ver las respuestas</em></p>
 }
 
+<hr />
+
+<h4>Lista de Preguntas</h4>
+
+@foreach (var p in DbContext.Preguntas)
+{
+    <div class="respuesta-card" style="margin:10px;">
+        @p.pr_id - @p.pr_pregunta
+    </div>
+}
+
+
 @code {
     private string nombreTmp1 = "";
     private string nombreTmp2 = "";
     private List<int> preguntasUsadas = new List<int>();
-    
+
     protected override void OnInitialized()
     {
         Juego.OnChange += StateHasChanged;
     }
-    
+
     public void Dispose()
     {
         Juego.OnChange -= StateHasChanged;
     }
-    
+
     private void ActualizarEquipos()
     {
         Juego.ActualizarNombres(nombreTmp1, nombreTmp2);
     }
-    
+    private void ToggleRespuesta(int respuestaId)
+    {
+        if (Juego.RespuestasReveladas.Contains(respuestaId))
+            Juego.OcultarRespuesta(respuestaId);
+        else
+            Juego.RevelarRespuesta(respuestaId);
+    }
     private void CargarPreguntaAleatoria()
     {
         var preguntasDisponibles = DbContext.Preguntas
             .Where(p => !preguntasUsadas.Contains(p.pr_id))
             .ToList();
-        
+
         if (!preguntasDisponibles.Any())
         {
             preguntasUsadas.Clear();
             preguntasDisponibles = DbContext.Preguntas.ToList();
         }
-        
+
         if (preguntasDisponibles.Any())
         {
             var random = new Random();
             var preguntaAleatoria = preguntasDisponibles[random.Next(preguntasDisponibles.Count)];
-            
+
             // Cargar las respuestas de esta pregunta
             var respuestas = DbContext.Respuestas
                 .Where(r => r.pr_id == preguntaAleatoria.pr_id)
                 .ToList();
-            
+
             preguntasUsadas.Add(preguntaAleatoria.pr_id);
             Juego.ActualizarJuego(preguntaAleatoria.pr_pregunta, preguntaAleatoria.pr_id, respuestas);
         }
     }
 }
-
-

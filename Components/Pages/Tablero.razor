@@ -3,11 +3,12 @@
 @implements IDisposable
 @rendermode InteractiveServer
 
-<div class="marcador-container" style="display: flex; justify-content: space-around; background: #222; color: white; padding: 20px;">
-    
+<div class="marcador-container"
+     style="display: flex; justify-content: space-around; background: #222; color: white; padding: 20px;">
+
     <div class="equipo">
         <h2 style="color: cyan;">@Juego.Equipo1</h2>
-        <p>Puntos: 0</p>
+        <p>Puntos: @Juego.PuntosEquipo1</p>
     </div>
 
     <div class="vs">
@@ -16,7 +17,7 @@
 
     <div class="equipo">
         <h2 style="color: magenta;">@Juego.Equipo2</h2>
-        <p>Puntos: 0</p>
+        <p>@Juego.PuntosEquipo2</p>
     </div>
 
 </div>
@@ -25,10 +26,18 @@
     <h1>@Juego.PreguntaActual</h1>
 
     <ul>
-        @foreach (var res in Juego.RespuestasReveladas)
+        @foreach (var respuesta in Juego.RespuestasActuales)
         {
-            <li style="font-size: 2rem; background: gold; color: black; margin: 10px;">
-                @res
+            var revelada = Juego.RespuestasReveladas.Contains(respuesta.res_id);
+            <li  style="font-size: 2rem; background: @(revelada ? "gold" : "#333"); color: @(revelada ? "black" : "#333"); margin: 10px;">
+                @if (revelada)
+                {
+                    @($"{respuesta.res_respuesta} - {respuesta.res_cantidad}")
+                }
+                else
+                {
+                    @("???")
+                }
             </li>
         }
     </ul>

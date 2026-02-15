@@ -1,7 +1,5 @@
 is_global = true
 build_property.TargetFramework = net8.0
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v8.0
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
 build_property.ProjectTypeGuids = 
@@ -11,53 +9,51 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CienEstudiantesDijeron
 build_property.RootNamespace = CienEstudiantesDijeron
-build_property.ProjectDir = /Users/jorge/Archivos/Proyectos C#/JuegoCienEstudiantes/CienEstudiantesDijeron/
+build_property.ProjectDir = C:\Users\itzel\OneDrive\Documentos\GitHub\CienEstudiantesDijeron\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/jorge/Archivos/Proyectos C#/JuegoCienEstudiantes/CienEstudiantesDijeron
+build_property.MSBuildProjectDirectory = C:\Users\itzel\OneDrive\Documentos\GitHub\CienEstudiantesDijeron
 build_property._RazorSourceGeneratorDebug = 
-build_property.EffectiveAnalysisLevelStyle = 8.0
-build_property.EnableCodeStyleSeverity = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/App.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/Control.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db250cm9sLnJhem9y
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Pages/Control.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb250cm9sLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/Error.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/ListaPreguntas.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9MaXN0YVByZWd1bnRhcy5yYXpvcg==
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Pages/ListaPreguntas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMaXN0YVByZWd1bnRhcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/Tablero.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9UYWJsZXJvLnJhem9y
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Pages/Tablero.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUYWJsZXJvLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Routes.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9Sb3V0ZXMucmF6b3I=
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/_Imports.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9fSW1wb3J0cy5yYXpvcg==
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Layout/MainLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-0qbexx6nrq
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-duiyqzto04
 
-[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTmF2TWVudS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-v5ugaf7yo8
+[C:/Users/itzel/OneDrive/Documentos/GitHub/CienEstudiantesDijeron/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-a8qs4p5lvc
