@@ -1,0 +1,119 @@
+@page "/importar"
+@using CienEstudiantesDijeron.Services
+@inject ImportadorService ImportService
+@rendermode InteractiveServer
+
+<PageTitle>Importar Contenido</PageTitle>
+
+<h3>Importar Preguntas y Respuestas</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">¿Cómo preparar tu archivo?</h5>
+            </div>
+            <div class="card-body">
+                <p>El archivo debe ser un formato <strong>.CSV</strong> (delimitado por comas) con la siguiente estructura:</p>
+                
+                <table class="table table-sm table-bordered bg-light">
+                    <thead>
+                        <tr class="table-secondary">
+                            <th>Pregunta</th>
+                            <th>Respuesta</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>¿Color favorito?</td>
+                            <td>Azul</td>
+                            <td>40</td>
+                        </tr>
+                        <tr>
+                            <td>¿Color favorito?</td>
+                            <td>Rojo</td>
+                            <td>30</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-warning small">
+                    <ul>
+                        <li>Los encabezados deben llamarse exactamente: <strong>Pregunta, Respuesta, Puntos</strong>.</li>
+                        <li>Repite la misma pregunta para cada una de sus respuestas.</li>
+                        <li>Asegúrate de guardar el archivo como <strong>CSV (delimitado por comas)</strong> desde Excel.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Selecciona tu archivo</label>
+                <InputFile OnChange="CargarArchivoMemoria" class="form-control" accept=".csv" />
+            </div>
+
+            <button class="btn btn-primary w-100" @onclick="ProcesarArchivo" disabled="@(archivoSeleccionado == null || estaCargando)">
+                @if (estaCargando)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span> Procesando...</span>
+                }
+                else
+                {
+                    <span>🚀 Subir a Base de Datos</span>
+                }
+            </button>
+
+            @if (!string.IsNullOrEmpty(mensaje))
+            {
+                <div class="mt-3 alert @claseMensaje animate__animated animate__fadeIn">
+                    @mensaje
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private IBrowserFile? archivoSeleccionado;
+    private bool estaCargando = false;
+    private string mensaje = "";
+    private string claseMensaje = "alert-info";
+
+    private void CargarArchivoMemoria(InputFileChangeEventArgs e)
+    {
+        archivoSeleccionado = e.File;
+        mensaje = $"📁 Archivo listo: {archivoSeleccionado.Name}";
+        claseMensaje = "alert-info";
+        StateHasChanged(); 
+    }
+
+    private async Task ProcesarArchivo()
+    {
+        if (archivoSeleccionado == null) return;
+
+        estaCargando = true;
+        mensaje = "Procesando datos en el servidor...";
+        
+        try {
+            using var stream = archivoSeleccionado.OpenReadStream(maxAllowedSize: 1024 * 5120);
+            await ImportService.ImportarPreguntasCsv(stream);
+            
+            mensaje = "✅ ¡Importación completada! Los datos ya están en SQLite.";
+            claseMensaje = "alert-success";
+            archivoSeleccionado = null;
+        }
+        catch (Exception ex) {
+            mensaje = "❌ Error: Verifica que los encabezados del CSV sean correctos.";
+            claseMensaje = "alert-danger";
+            Console.WriteLine(ex.ToString());
+        }
+        finally {
+            estaCargando = false;
+        }
+    }
+}

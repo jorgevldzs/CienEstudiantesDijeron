@@ -1,6 +1,7 @@
 using CienEstudiantesDijeron.Components;
 using Microsoft.EntityFrameworkCore;
 using CienEstudiantesDijeron.Data;
+using CienEstudiantesDijeron.Services;
 using CienEstudiantesDijeron;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddRazorComponents()
 
 
 builder.Services.AddSingleton<JuegoService>();
+builder.Services.AddScoped<ImportadorService>();
 
 // Registrar el DbContext
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>

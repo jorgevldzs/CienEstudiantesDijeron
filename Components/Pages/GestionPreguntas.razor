@@ -1,0 +1,124 @@
+@page "/gestionar"
+@using Microsoft.EntityFrameworkCore
+@using CienEstudiantesDijeron.Data
+@using CienEstudiantesDijeron.Models
+@inject ApplicationDbContext Context
+@rendermode InteractiveServer
+
+<h3>Gestión de Contenido</h3>
+<p class="text-muted">Para agregar contenido nuevo, utiliza la sección de <a href="/importar">Importación CSV</a>.</p>
+
+@if (preguntas == null)
+{
+    <div class="spinner-border" role="status"></div>
+}
+else
+{
+    @foreach (var p in preguntas)
+    {
+        <div class="card mb-3">
+            <div class="card-header bg-dark text-white d-flex justify-content-between shadow-sm" 
+                 style="cursor:pointer" @onclick="() => Alternar(p.pr_id)">
+                <span>@p.pr_pregunta</span>
+                <span>@(preguntaAbiertaId == p.pr_id ? "➖" : "➕")</span>
+            </div>
+
+            @if (preguntaAbiertaId == p.pr_id)
+            {
+                <div class="card-body border-start border-4 border-primary">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control fw-bold" @bind="p.pr_pregunta" />
+                        <button class="btn btn-primary" @onclick="() => GuardarP(p)">Actualizar</button>
+                        <button class="btn btn-danger" @onclick="() => BorrarP(p)" @onclick:stopPropagation="true">
+                            Eliminar Todo
+                        </button>
+                    </div>
+
+                    <h5>Respuestas</h5>
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Respuesta</th>
+                                <th style="width:100px">Puntos</th>
+                                <th style="width:50px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (respDict.ContainsKey(p.pr_id))
+                            {
+                                @foreach (var r in respDict[p.pr_id])
+                                {
+                                    <tr>
+                                        <td><input type="text" class="form-control" @bind="r.res_respuesta" /></td>
+                                        <td><input type="number" class="form-control" @bind="r.res_cantidad" /></td>
+                                        <td>
+                                            <button class="btn btn-outline-success" @onclick="() => GuardarR(r)">💾</button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<Pregunta>? preguntas;
+    private Dictionary<int, List<Respuesta>> respDict = new();
+    private int? preguntaAbiertaId;
+
+    protected override async Task OnInitializedAsync() => await CargarDatos();
+
+    private void Alternar(int id) => preguntaAbiertaId = (preguntaAbiertaId == id) ? null : id;
+
+    private async Task CargarDatos()
+    {
+        // Cargamos datos frescos sin rastreo para evitar errores de concurrencia
+        preguntas = await Context.Preguntas.AsNoTracking().ToListAsync();
+        var respuestas = await Context.Respuestas.AsNoTracking().ToListAsync();
+        
+        respDict = preguntas.ToDictionary(
+            p => p.pr_id, 
+            p => respuestas.Where(r => r.pr_id == p.pr_id).ToList()
+        );
+        StateHasChanged();
+    }
+
+    private async Task BorrarP(Pregunta p)
+    {
+        try 
+        {
+            var id = p.pr_id;
+            // SQL Directo: Rápido y seguro contra errores de FK
+            await Context.Database.ExecuteSqlRawAsync("DELETE FROM Respuestas WHERE pr_id = {0}", id);
+            await Context.Database.ExecuteSqlRawAsync("DELETE FROM Preguntas WHERE pr_id = {0}", id);
+
+            Context.ChangeTracker.Clear();
+            preguntaAbiertaId = null;
+            await CargarDatos();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al borrar: {ex.Message}");
+        }
+    }
+
+    private async Task GuardarP(Pregunta p) 
+    { 
+        Context.Preguntas.Update(p); 
+        await Context.SaveChangesAsync(); 
+        Context.ChangeTracker.Clear();
+        await CargarDatos(); // Recargamos para asegurar que la UI esté sincronizada
+    }
+
+    private async Task GuardarR(Respuesta r) 
+    { 
+        Context.Respuestas.Update(r); 
+        await Context.SaveChangesAsync(); 
+        Context.ChangeTracker.Clear();
+        await CargarDatos();
+    }
+}

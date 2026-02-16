@@ -38,6 +38,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/GestionPreguntas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9HZXN0aW9uUHJlZ3VudGFzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/Importar.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9JbXBvcnRhci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/jorge/Archivos/Proyectos C\#/JuegoCienEstudiantes/CienEstudiantesDijeron/Components/Pages/ListaPreguntas.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9MaXN0YVByZWd1bnRhcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
