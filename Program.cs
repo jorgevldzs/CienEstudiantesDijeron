@@ -6,42 +6,28 @@ using CienEstudiantesDijeron;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-
-
+//Se agrega el servicio de Juego Service como un Singleton
 builder.Services.AddSingleton<JuegoService>();
+//Se agrega el servicio de Importador Service como un Scoped
 builder.Services.AddScoped<ImportadorService>();
 
-// Registrar el DbContext
+// Para utilizar una base de datos SQL Server
 //builder.Services.AddDbContext<ApplicationDbContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+//Se agrega el servicio para usar una base de datos SQLite
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Agrega estos servicios
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 
-
-
-
-
-
-
 var app = builder.Build();
 
-/*using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.EnsureCreated(); // Esto crea el archivo .db y todas las tablas
-}*/
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);

@@ -5,13 +5,18 @@
 @inject ApplicationDbContext Context
 @rendermode InteractiveServer
 
+<PageTitle>Gestion Preguntas</PageTitle>
+
+@*Mencion de que las preguntas se agregan en otra seccion*@
 <h3>Gestión de Contenido</h3>
 <p class="text-muted">Para agregar contenido nuevo, utiliza la sección de <a href="/importar">Importación CSV</a>.</p>
 
+@*Si no hay preguntas no se muestra nada*@
 @if (preguntas == null)
 {
     <div class="spinner-border" role="status"></div>
 }
+@*Se muestran todas las preguntas*@
 else
 {
     @foreach (var p in preguntas)
@@ -66,7 +71,9 @@ else
 }
 
 @code {
+    //Lista con las preguntas
     private List<Pregunta>? preguntas;
+    //Diccionario para relacionar las preguntas con sus respuestas
     private Dictionary<int, List<Respuesta>> respDict = new();
     private int? preguntaAbiertaId;
 
@@ -74,9 +81,9 @@ else
 
     private void Alternar(int id) => preguntaAbiertaId = (preguntaAbiertaId == id) ? null : id;
 
+    //Metodo para cargar datos
     private async Task CargarDatos()
     {
-        // Cargamos datos frescos sin rastreo para evitar errores de concurrencia
         preguntas = await Context.Preguntas.AsNoTracking().ToListAsync();
         var respuestas = await Context.Respuestas.AsNoTracking().ToListAsync();
         
@@ -87,12 +94,13 @@ else
         StateHasChanged();
     }
 
+    //Metodo para borrar pregunta
     private async Task BorrarP(Pregunta p)
     {
         try 
         {
             var id = p.pr_id;
-            // SQL Directo: Rápido y seguro contra errores de FK
+            // Primero se borran las respuestas y luego la pregunta
             await Context.Database.ExecuteSqlRawAsync("DELETE FROM Respuestas WHERE pr_id = {0}", id);
             await Context.Database.ExecuteSqlRawAsync("DELETE FROM Preguntas WHERE pr_id = {0}", id);
 
@@ -106,14 +114,16 @@ else
         }
     }
 
+    //Metodo para guardar pregunta
     private async Task GuardarP(Pregunta p) 
     { 
         Context.Preguntas.Update(p); 
         await Context.SaveChangesAsync(); 
         Context.ChangeTracker.Clear();
-        await CargarDatos(); // Recargamos para asegurar que la UI esté sincronizada
+        await CargarDatos(); 
     }
 
+    //Metodo para guardar respuesta
     private async Task GuardarR(Respuesta r) 
     { 
         Context.Respuestas.Update(r); 

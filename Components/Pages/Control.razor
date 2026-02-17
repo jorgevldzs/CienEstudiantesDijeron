@@ -1,46 +1,56 @@
 @page "/"
 @using CienEstudiantesDijeron.Data
 @using CienEstudiantesDijeron.Models
+
 @inject JuegoService Juego
 @inject ApplicationDbContext DbContext
-@rendermode InteractiveServer
-@implements IDisposable
 @inject IJSRuntime JSRuntime
 
-<PageTitle>Control</PageTitle>
+@rendermode InteractiveServer
+@implements IDisposable
+
+<PageTitle>Control Juego</PageTitle>
 
 <h3>Panel de Control</h3>
 
+@*Boton para abrir el tablero*@
 <button @onclick="AbrirVentana" class="btn btn-secondary">Abrir Tablero</button>
 
 <hr />
 
-@* --- SECCIÓN DE CONFIGURACIÓN --- *@
-@* Se deshabilita o oculta cuando la partida inicia *@
+@*Seccion de configuracion de la partida*@
+@*Se oculta cuando la partida inicia*@
 <div style="margin-bottom: 20px; display: @(partidaEnCurso ? "none" : "block")">
     <h4>Configuración de Partida</h4>
+    @*Nombre del equipo 1*@
     <label>Nombre Equipo 1:</label><br>
     <input @bind="nombreTmp1" placeholder="Nombre Equipo 1" /><br>
 
+    @*Nombre del equipo 2*@
     <label>Nombre Equipo 2:</label><br>
     <input @bind="nombreTmp2" placeholder="Nombre Equipo 2" /><br />
 
+    @*Numero de rondas*@
     <label>Número de Rondas:</label><br>
     <input @bind="cantidadRondas" type="number" min="1" /><br><br>
 
+    @*Boton para comenzar la partida, llama al metodo ComenzarPartida*@
     <button @onclick="ComenzarPartida" class="btn btn-primary">Comenzar Partida</button>
 </div>
 
-@* --- SECCIÓN DEL CONTENIDO DE LA PARTIDA --- *@
+@*Seccion de contenido de la partida*@
+@*Solo se muestra cuando hay una partida en curso*@
 @if (partidaEnCurso)
 {
     <div style="border: 1px solid #ccc; padding: 20px; border-radius: 10px;">
+        @*Seccion final, cuando la partida acaba*@
         @if (Juego.PartidaTerminada) 
         {
             <div style="text-align: center; padding: 30px; background: #f8f9fa; border: 2px dashed #28a745; border-radius: 10px;">
                 <h2 class="text-success">¡PARTIDA FINALIZADA!</h2>
                 <hr />
                 
+                @*Tabla con la puntuacion de los equipos*@
                 <div style="margin: 20px auto; max-width: 400px;">
                     <table class="table table-bordered" style="background: white;">
                         <thead class="thead-dark">
@@ -61,6 +71,7 @@
                         </tbody>
                     </table>
 
+                    @*Se muestra al ganador*@
                     <div style="margin-top: 15px; padding: 10px; border: 1px solid #28a745;">
                         <strong>GANADOR: </strong> 
                         <span class="badge bg-success" style="font-size: 1.2rem;">
@@ -70,6 +81,7 @@
                 </div>
 
                 <hr />
+                @*Historial de los puntos que se asignaron en cada ronda*@
                 <div style="margin-top: 20px;">
                     <h5>Historial de Puntos por Ronda</h5>
                     <table class="table table-sm table-striped" style="font-size: 0.9rem;">
@@ -102,158 +114,180 @@
                     </table>
                 </div>
 
+
+                @*Boton para volver al inicio y empezar una nueva partida, llama al metodo ResetearParaNuevaPartida*@
                 <button @onclick="ResetearParaNuevaPartida" class="btn btn-primary btn-lg" style="margin-top: 20px;">
                     ← VOLVER AL INICIO (NUEVA PARTIDA)
                 </button>
             </div>
         }
+        @*Contenido cuando la partida esta en curso*@
         else
         {
-                    <div style="display: flex; justify-content: space-between;">
-            <h4>Ronda Actual: @rondaActual / @cantidadRondas</h4>
-            <button @onclick="FinalizarPartida" class="btn btn-danger">Finalizar Partida</button>
-        </div>
-        <div>
-            <h5>Puntos Ronda: @Juego.puntosPartida</h5>
-            <br>
-            <h5>Puntos @Juego.Equipo1: @Juego.puntosEquipo1</h5>
-            <h5>Puntos @Juego.Equipo2: @Juego.puntosEquipo2</h5>
-        </div>
-
-        <hr />
-
-        @if (string.IsNullOrEmpty(Juego.PreguntaActual))
-        {
-            <button @onclick="CargarPreguntaAleatoria" class="btn btn-primary btn-lg">Generar Pregunta</button>
-        }
-        else
-        {
-            @* BLOQUE DE MULTIPLICADOR (Arriba de la pregunta) *@
-            <div style="margin-bottom: 15px; padding: 10px; background: @(Juego.PreguntaRevelada ? "#e9ecef" : "#fff3cd"); border-radius: 5px;">
-                <span style="font-weight: bold;">Multiplicador de esta Ronda:</span>
-                <div class="btn-group ms-3">
-                    @foreach (var m in new int[] { 1, 2, 3 })
-                    {
-                        <button @onclick="() => Juego.SetMultiplicador(m)" 
-                                disabled="@Juego.PreguntaRevelada"
-                                class="btn @(Juego.Multiplicador == m ? "btn-dark" : "btn-outline-dark")">
-                            x @m
-                        </button>
-                    }
-                </div>
-                @if (Juego.PreguntaRevelada)
-                {
-                    <small class="text-muted ms-2">(Ronda en curso)</small>
-                }
+            @*Boton para finalizar la partida*@
+            <div style="display: flex; justify-content: space-between;">
+                <h4>Ronda Actual: @rondaActual / @cantidadRondas</h4>
+                <button @onclick="FinalizarPartida" class="btn btn-danger">Finalizar Partida</button>
+            </div>
+            @*Puntos de la ronda y de los equipos*@
+            <div>
+                <h5>Puntos Ronda: @Juego.puntosPartida</h5>
+                <br>
+                <h5>Puntos @Juego.Equipo1: @Juego.puntosEquipo1</h5>
+                <h5>Puntos @Juego.Equipo2: @Juego.puntosEquipo2</h5>
             </div>
 
-            <div style="background: #f0f0f0; padding: 15px; border-radius: 5px;">
-                <h5><strong>Vista del Admin:</strong> @Juego.PreguntaActual</h5>
-                
-                @if (!Juego.PreguntaRevelada)
-                {
-                    <button @onclick="() => Juego.RevelarPregunta()" class="btn btn-warning w-100">
-                        REVELAR PREGUNTA AL TABLERO
-                    </button>
-                }
-                else
-                {
-                    <span class="badge bg-success">Pregunta visible en tablero</span>
-                }
-            </div>
+            <hr />
 
-            
-            @if (Juego.PreguntaRevelada) {
-                <h4 style="margin-top:20px;">Respuestas (Presiona para revelar)</h4>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-                    @foreach (var respuesta in Juego.RespuestasActuales)
-                    {
-                        <button @onclick="() => Juego.RevelarRespuestaPorTexto(respuesta.res_respuesta)"
-                        style="padding: 10px; background: @(Juego.RespuestasReveladas.Contains(respuesta.res_respuesta) ? "#4CAF50" : "#2196F3"); color: white; border: none; border-radius: 5px; text-align: left;">
-                
-                            @* Nombre de la respuesta *@
-                            <strong>@respuesta.res_respuesta</strong> 
-                            
-                            <span style="float: right;">
-                                @* Valor base *@
-                                (@respuesta.res_cantidad pts)
-                                
-                                @* Valor multiplicado (solo si el multiplicador es mayor a 1) *@
-                                @if (Juego.Multiplicador > 1)
-                                {
-                                    <span style="margin-left: 10px; color: #ffff00; font-weight: bold;">
-                                        ➔ @Juego.ObtenerPuntosMultiplicados(respuesta.res_cantidad) pts
-                                    </span>
-                                }
-                            </span>
-                        </button>
-                    }
-                </div>
-
-                <div style="display: flex; justify-content: space-around; margin-top: 15px; padding: 10px; background: #ffebee; border-radius: 8px;">
-                    <div style="text-align: center;">
-                        <h6>Errores @Juego.Equipo1</h6>
-                        <div style="font-size: 1.5rem; color: red; font-weight: bold; margin-bottom: 5px;">
-                            @string.Concat(Enumerable.Repeat("X ", Juego.ErroresEquipo1))
-                        </div>
-                        <button class="btn btn-outline-danger btn-sm" @onclick='() => Juego.AgregarError(Juego.Equipo1)'>
-                            + Marcar Error
-                        </button>
-                    </div>
-
-                    <div style="text-align: center;">
-                        <h6>Errores @Juego.Equipo2</h6>
-                        <div style="font-size: 1.5rem; color: red; font-weight: bold; margin-bottom: 5px;">
-                            @string.Concat(Enumerable.Repeat("X ", Juego.ErroresEquipo2))
-                        </div>
-                        <button class="btn btn-outline-danger btn-sm" @onclick='() => Juego.AgregarError(Juego.Equipo2)'>
-                            + Marcar Error
-                        </button>
-                    </div>
-                </div>
-
-                
-
-                <div style="display: flex; justify-content: space-evenly; margin-top: 20px; background: #eee; padding: 15px;">
-                    @* Usamos una variable temporal para el texto del botón si los puntos ya se asignaron *@
-                    <button class="btn btn-success" 
-                            @onclick="() => Juego.AsignarPuntosEquipo(Juego.Equipo1, rondaActual)"
-                            disabled="@(Juego.puntosAsignadosEnRonda || Juego.puntosPartida == 0)">
-                        @(Juego.puntosAsignadosEnRonda ? "Entregados" : $"Entregar {Juego.puntosPartida} pts a {Juego.Equipo1}")
-                    </button>
-
-                    <button class="btn btn-success" 
-                            @onclick="() => Juego.AsignarPuntosEquipo(Juego.Equipo2, rondaActual)"
-                            disabled="@(Juego.puntosAsignadosEnRonda || Juego.puntosPartida == 0)">
-                        @(Juego.puntosAsignadosEnRonda ? "Entregados" : $"Entregar {Juego.puntosPartida} pts a {Juego.Equipo2}")
-                    </button>
-                </div>
-
-                @if (Juego.puntosAsignadosEnRonda)
-                {
-                    <p style="color: green; text-align: center; margin-top: 5px;">
-                        ✔ Puntos de la ronda asignados correctamente.
-                    </p>
-                }
+            @*Boton para generar la pregunta de manera aleatoria*@
+            @if (string.IsNullOrEmpty(Juego.PreguntaActual))
+            {
+                <button @onclick="CargarPreguntaAleatoria" class="btn btn-primary btn-lg">Generar Pregunta</button>
             }
+            else
+            {
+                @*Seccion cuando se genero la pregunta*@
+                @*Apartado para cambiar el valor de los puntos de la ronda*@
+                <div style="margin-bottom: 15px; padding: 10px; background: @(Juego.PreguntaRevelada ? "#e9ecef" : "#fff3cd"); border-radius: 5px;">
+                    <span style="font-weight: bold;">Multiplicador de esta Ronda:</span>
+                    @*Se presentan los posibles multiplicadores de puntos*@
+                    <div class="btn-group ms-3">
+                        @foreach (var m in new int[] { 1, 2, 3 })
+                        {
+                            <button @onclick="() => Juego.SetMultiplicador(m)" 
+                                    disabled="@Juego.PreguntaRevelada"
+                                    class="btn @(Juego.Multiplicador == m ? "btn-dark" : "btn-outline-dark")">
+                                x @m
+                            </button>
+                        }
+                    </div>
+                    @*No se puede cambiar el valor del multiplicador si la ronda esta en curso*@
+                    @if (Juego.PreguntaRevelada)
+                    {
+                        <small class="text-muted ms-2">(Ronda en curso)</small>
+                    }
+                </div>
 
+                @*Seccion donde se visualiza la pregunta y presenta la posibilidad de revelarla*@
+                <div style="background: #f0f0f0; padding: 15px; border-radius: 5px;">
+                    <h5><strong>Vista del Admin:</strong> @Juego.PreguntaActual</h5>
+                    
+                    @*Boton para revelar la pregunta*@
+                    @if (!Juego.PreguntaRevelada)
+                    {
+                        <button @onclick="() => Juego.RevelarPregunta()" class="btn btn-warning w-100">
+                            REVELAR PREGUNTA AL TABLERO
+                        </button>
+                    }
+                    @*Cuando la pregunta ya esta visible en el tablero*@
+                    else
+                    {
+                        <span class="badge bg-success">Pregunta visible en tablero</span>
+                    }
+                </div>
 
-            <button @onclick="SiguienteRonda" style="margin-top: 20px;" class="btn btn-success">
-                @(rondaActual < cantidadRondas ? "Siguiente Ronda" : "FINALIZAR Y VER GANADOR")
-            </button>
+                @*Seccion cuando se revela la pregunta*@
+                @if (Juego.PreguntaRevelada) {
+                    <h4 style="margin-top:20px;">Respuestas (Presiona para revelar)</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        @*Respuestas de la pregunta*@
+                        @foreach (var respuesta in Juego.RespuestasActuales)
+                        {
+                            @*Cuando se presiona el boton se revela la respuesta*@
+                            <button @onclick="() => Juego.RevelarRespuestaPorTexto(respuesta.res_respuesta)"
+                            style="padding: 10px; background: @(Juego.RespuestasReveladas.Contains(respuesta.res_respuesta) ? "#4CAF50" : "#2196F3"); color: white; border: none; border-radius: 5px; text-align: left;">
+                    
+                                @* Respuesta *@
+                                <strong>@respuesta.res_respuesta</strong> 
+                                
+                                <span style="float: right;">
+                                    @* Valor base *@
+                                    (@respuesta.res_cantidad pts)
+                                    
+                                    @* Valor multiplicado (solo si el multiplicador es mayor a 1) *@
+                                    @if (Juego.Multiplicador > 1)
+                                    {
+                                        <span style="margin-left: 10px; color: #ffff00; font-weight: bold;">
+                                            ➔ @Juego.ObtenerPuntosMultiplicados(respuesta.res_cantidad) pts
+                                        </span>
+                                    }
+                                </span>
+                            </button>
+                        }
+                    </div>
+
+                    @*Seccion para marcar los errores de los equipos*@
+                    <div style="display: flex; justify-content: space-around; margin-top: 15px; padding: 10px; background: #ffebee; border-radius: 8px;">
+                        <div style="text-align: center;">
+                            <h6>Errores @Juego.Equipo1</h6>
+                            <div style="font-size: 1.5rem; color: red; font-weight: bold; margin-bottom: 5px;">
+                                @string.Concat(Enumerable.Repeat("X ", Juego.ErroresEquipo1))
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm" @onclick='() => Juego.AgregarError(Juego.Equipo1)'>
+                                + Marcar Error
+                            </button>
+                        </div>
+
+                        <div style="text-align: center;">
+                            <h6>Errores @Juego.Equipo2</h6>
+                            <div style="font-size: 1.5rem; color: red; font-weight: bold; margin-bottom: 5px;">
+                                @string.Concat(Enumerable.Repeat("X ", Juego.ErroresEquipo2))
+                            </div>
+                            <button class="btn btn-outline-danger btn-sm" @onclick='() => Juego.AgregarError(Juego.Equipo2)'>
+                                + Marcar Error
+                            </button>
+                        </div>
+                    </div>
+
+                    @*Seccion para asignar los puntos a los equipos*@
+                    <div style="display: flex; justify-content: space-evenly; margin-top: 20px; background: #eee; padding: 15px;">
+                        @* Usamos una variable temporal para el texto del botón si los puntos ya se asignaron, para evitar que se vuelvan a asignar *@
+                        <button class="btn btn-success" 
+                                @onclick="() => Juego.AsignarPuntosEquipo(Juego.Equipo1, rondaActual)"
+                                disabled="@(Juego.puntosAsignadosEnRonda || Juego.puntosPartida == 0)">
+                            @(Juego.puntosAsignadosEnRonda ? "Entregados" : $"Entregar {Juego.puntosPartida} pts a {Juego.Equipo1}")
+                        </button>
+
+                        <button class="btn btn-success" 
+                                @onclick="() => Juego.AsignarPuntosEquipo(Juego.Equipo2, rondaActual)"
+                                disabled="@(Juego.puntosAsignadosEnRonda || Juego.puntosPartida == 0)">
+                            @(Juego.puntosAsignadosEnRonda ? "Entregados" : $"Entregar {Juego.puntosPartida} pts a {Juego.Equipo2}")
+                        </button>
+                    </div>
+
+                    @*Confirmacion de que se asignaron los puntos*@
+                    @if (Juego.puntosAsignadosEnRonda)
+                    {
+                        <p style="color: green; text-align: center; margin-top: 5px;">
+                            ✔ Puntos de la ronda asignados correctamente.
+                        </p>
+                    }
+                }
+
+                @*Boton para avanzar de ronda*@
+                <button @onclick="SiguienteRonda" style="margin-top: 20px;" class="btn btn-success">
+                    @(rondaActual < cantidadRondas ? "Siguiente Ronda" : "FINALIZAR Y VER GANADOR")
+                </button>
+            }
         }
-
-        }
-    
     </div>
 }
 
 @code {
+    //Nombre del equipo 1
     private string nombreTmp1 = "";
+    //Nombre del equipo 2
     private string nombreTmp2 = "";
-    private int cantidadRondas = 3; // Valor por defecto
+
+    //Cantidad de rondas de la partida, por defecto 3
+    private int cantidadRondas = 3;
+    //Numero de ronda actual
     private int rondaActual = 0;
-    private bool partidaEnCurso = false; // Controla la visibilidad
+
+    //Verificador si la partida esta en curso
+    private bool partidaEnCurso = false;
+
+    //Lista de preguntas usadas para no repetirlas
     private List<int> preguntasUsadas = new List<int>();
 
     protected override void OnInitialized()
@@ -266,21 +300,21 @@
         Juego.OnChange -= StateHasChanged;
     }
 
+    //Metodo para comenzar partida
     private void ComenzarPartida()
     {
         if (string.IsNullOrWhiteSpace(nombreTmp1) || string.IsNullOrWhiteSpace(nombreTmp2) || cantidadRondas <= 0)
         {
-            // Podrías agregar una alerta aquí
             return;
         }
 
         Juego.ActualizarNombres(nombreTmp1, nombreTmp2);
         partidaEnCurso = true;
         rondaActual = 1;
-        // Limpiar juego previo si existía
         Juego.LimpiarPregunta(); 
     }
 
+    //Metodo para cambiar de ronda
     private void SiguienteRonda()
     {
         if (rondaActual < cantidadRondas)
@@ -290,11 +324,11 @@
         }
         else
         {
-            // En lugar de resetear todo, anunciamos el fin para ver resultados
             Juego.FinalizarPartida();
         }
     }
 
+    //Metodo de resetear para una nueva partida
     private void ResetearParaNuevaPartida()
     {
         partidaEnCurso = false;
@@ -305,12 +339,14 @@
         Juego.ReiniciarTodo();
     }
 
+    //Metodo para finalizar la partida
     private void FinalizarPartida()
     {
         Juego.FinalizarPartida();
 
     }
 
+    //Metodo para cargar una pregunta aleatoria
     private void CargarPreguntaAleatoria()
     {
         var preguntasDisponibles = DbContext.Preguntas
@@ -334,10 +370,9 @@
         }
     }
 
-    //private async Task AbrirVentana() => await JSRuntime.InvokeVoidAsync("open", "/tablero", "_blank");
+    //Metodo para abrir el tablero en otra ventana
     private async Task AbrirVentana()
     {
-        // Pasamos la URL, el título y las dimensiones (800x600)
         await JSRuntime.InvokeVoidAsync("openWindow", "/tablero", "Nueva Ventana", 800, 600);
     }
 }
