@@ -130,16 +130,25 @@
 @code {
     protected override void OnInitialized()
     {
-        Juego.OnChange += ActualizarUI;
+        Juego.OnChange += ManejarCambioEstado;
     }
 
-    private async void ActualizarUI()
+    // Creamos un método dedicado para invocar el cambio
+    private async void ManejarCambioEstado()
     {
-        await InvokeAsync(StateHasChanged);
+        try
+        {
+            // InvokeAsync asegura que volvamos al hilo del navegador correspondiente
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception)
+        {
+            // Manejo silencioso en caso de que el circuito se haya cerrado
+        }
     }
 
     public void Dispose()
     {
-        Juego.OnChange -= ActualizarUI;
+        Juego.OnChange -= ManejarCambioEstado;
     }
 }

@@ -292,12 +292,26 @@
 
     protected override void OnInitialized()
     {
-        Juego.OnChange += StateHasChanged;
+        Juego.OnChange += ManejarCambioEstado;
+    }
+
+    // Creamos un método dedicado para invocar el cambio
+    private async void ManejarCambioEstado()
+    {
+        try
+        {
+            // InvokeAsync asegura que volvamos al hilo del navegador correspondiente
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception)
+        {
+            // Manejo silencioso en caso de que el circuito se haya cerrado
+        }
     }
 
     public void Dispose()
     {
-        Juego.OnChange -= StateHasChanged;
+        Juego.OnChange -= ManejarCambioEstado;
     }
 
     //Metodo para comenzar partida
